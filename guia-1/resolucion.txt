@@ -1,0 +1,92 @@
+1. a)  Fuente de informacion: Canal de television
+       Mensaje: noticiero
+       Transmisor: satelite
+       Senial: ondas electromagneticas
+       Canal: espacio entre la estacion, el satelite y la antena
+       Fuente de Ruido: interferencias de otras ondas
+       Receptor: antena, decodificador, televisor
+   b)  Fuente de informacion: Usuario que envia un mensaje
+       Mensaje: texto
+       Transmisor: aplicacion
+       Senial: paquetes de datos digitales
+       Canal: internet
+       Fuente de Ruido: perdida de conexion
+       Receptor: celular de usuario destinatario
+   c)  Fuente de informacion: Sistema de control de transito
+       Mensaje: detenerse, avanzar o tener precaucion
+       Transmisor: semaforo
+       Senial: luz roja, amarilla o verde
+       Canal: espacio visual entre el semaforo y las personas
+       Fuente de Ruido: objetos que tapen
+       Receptor: conductores y peatones
+   d)  Fuente de informacion: Usuario que habla y aparece en la camara
+       Mensaje: Su voz e imagen
+       Transmisor: microfono y camara
+       Senial: paquetes digitales de audio y video
+       Canal: internet
+       Fuente de Ruido: perdida de internet
+       Receptor: usuario con el que comparte videollamada
+
+2- Lista ordenada segun la cantidad de informacion que contienen:
+    - acaba de caer un meteorito
+    - esta lloviendo en el desierto
+    - se corto la luz en casa
+    - Messi erro un penal
+    - el sol sale al amanecer
+
+3.a - La funcion a analizar seria la del grafico y = log2(1/x). Siendo x P(E) e y I(E), con x entre 0 y 1.
+Con que mas grande sea la probabilidad de E, menor sera la informacion de E, y viceversa.
+  b - Si I(E) = 1 bit significa que el evento resuelve una situacion binaria entre dos posibilidades igualmente probables.
+
+4- P(E) = 1/4
+   I(E) = log2(4) = 2
+
+5.a - P(E) = 1
+      I(E) = log2(1) = 0
+  b - P(E) = 1/2
+      I(E) = log2(2) = 1
+  c - P(E) = 1/4
+      I(E) = log2(4) = 2
+  d - P(E) = 1/10
+      I(E) = log2(10) = 3,322
+
+6.a - P(E) = 1/2
+      I(E) = log2(2) = 1
+  b - P(E) = 1/6
+      I(E) = log2(6) = 2,585
+  c - P(E) = 1/27
+      I(E) = log2(27) = 4,755
+  d - P(E) = 1/81
+      I(E) = log2(81) = 6,34
+
+7 - P(E) = 12/52 = 3/13
+    I(E) = log2(13/3) = 2,115
+
+8 - P(E) = 3/8
+    I(E) = log2(8/3) = 1,415
+
+9 - P(E) = 2/5
+    I(E) = log2(5/2) = 1,322
+
+10 - P(E) = (1/10)^4 = 1/10000
+     I(E) = log2(10000) = 13,288
+
+11 - P(E) = 12/16 * 11/15 * 10/14 = 11/28
+     I(E) = log2(28/11) = 1,35
+
+12.a) P(A) = 1/2
+      I(A) = log2(2) = 1
+      P(B) = 1/4
+      I(B) = log2(4) = 2
+      P(C) = 1/8
+      I(C) = log2(8) = 3
+      P(D) = 1/8
+      I(D) = log2(8) = 3
+
+   b) El simbolo A, por ser el mas probable
+
+   c) P(E) = 1/8 * 1/2 * 1/8 * 1/2 * 1/4 * 1/2 = 1/2048
+      I(E) = log2(2048) = 11
+    
+   d) P(B_A) = 1/4 * 1 * 1/2 = 1/8
+      I(B_A) = log2(8) = 3
