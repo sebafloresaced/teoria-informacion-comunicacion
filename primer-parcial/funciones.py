@@ -3,12 +3,12 @@ import random
 
 # Obtener la informacion y entropia a partir de un vector de probabilidades
 
-# generar una lista con la cantidad de información en bits de cada símbolo (utilizar comprensión de listas).
+# generar una lista con la cantidad de informacion en bits de cada simbolo (utilizar comprension de listas).
 def informacion(P, r=2):
     I = [math.log(1 / p, r) if p > 0 else 0 for p in P]
     return I
 
-# obtener la entropía de la fuente (utilizar la función anterior).
+# obtener la entropia de la fuente (utilizar la funcion anterior).
 def entropia(P, r=2):
     I = informacion(P,r)
     H = 0
@@ -18,7 +18,7 @@ def entropia(P, r=2):
 
 
 # Dada una cadena de caracteres que representa un mensaje emitido por una fuente de memoria nula, devolver dos listas paralelas que contengan: 
-# el alfabeto de la fuente y las probabilidades de cada símbolo
+# el alfabeto de la fuente y las probabilidades de cada simbolo
 
 def obtener_fuente(mensaje):
     alfabeto = []
@@ -29,8 +29,8 @@ def obtener_fuente(mensaje):
     probabilidades = [ mensaje.count(simbolo) / len(mensaje) for simbolo in alfabeto]
     return alfabeto, probabilidades
 
-# Dados un número entero N, una lista que contenga el alfabeto de una fuente y otra con las probabilidades de cada símbolo, 
-# simular la generación de una cadena de caracteres de longitud N emitida por esa fuente.
+# Dados un numero entero N, una lista que contenga el alfabeto de una fuente y otra con las probabilidades de cada simbolo, 
+# simular la generacion de una cadena de caracteres de longitud N emitida por esa fuente.
 
 def generar_mensaje(N, alfabeto, probabilidades):
     simbolos = random.choices(
@@ -58,26 +58,24 @@ def obtener_longitudes(codigo):
 
 # Conseguir vector estacionario
 
-def vector_estacionario(matriz):
+def vector_estacionario(matriz,vector):
     n = len(matriz)
-    # Arrancamos suponiendo todos los estados equiprobables
-    vector = [1 / n for i in range(n)]
     for j in range(10000):
-        # Acá guardamos M * vector
+        # Aca guardamos M * vector
         nuevo_vector = [0 for i in range(n)]
-        # Multiplicación matriz por vector
+        # Multiplicacion matriz por vector
         for fila in range(n):
             for columna in range(n):
                 nuevo_vector[fila] += (
                     matriz[fila][columna]
                     * vector[columna]
                 )
-        # Buscamos cuánto cambió el vector
+        # Buscamos cuanto cambio el vector
         diferencia = max(
             abs(nuevo_vector[i] - vector[i])
             for i in range(n)
         )
-        # Si prácticamente no cambia, llegamos al estacionario
+        # Si practicamente no cambia, llegamos al estacionario
         if diferencia < 0.000001:
             return nuevo_vector
         # Seguimos iterando
@@ -86,29 +84,27 @@ def vector_estacionario(matriz):
 
 # Calcular la entropia de markov
 
-def entropia_markov(matriz):
-    # Primero calculamos la distribución estacionaria
-    vector = vector_estacionario(matriz)
+def entropia_markov(matriz, vector_estacionario):
     n = len(matriz)
     h_total = 0
     # Cada columna representa las transiciones posibles desde un estado
     for columna in range(n):
         probabilidades = []
-        # Construimos la distribución de probabilidades correspondiente a ese estado
+        # Construimos la distribucion de probabilidades correspondiente a ese estado
         for fila in range(n):
             probabilidades.append(
                 matriz[fila][columna]
             )
-        # Entropía estando en ese estado
+        # Entropia estando en ese estado
         h_estado = entropia(probabilidades)
         # La ponderamos por la probabilidad estacionaria de encontrarnos en dicho estado
-        h_total += vector[columna] * h_estado
+        h_total += vector_estacionario[columna] * h_estado
     return h_total
 
 
 # Genera el alfabeto y la matriz de trancision 
 def obtener_fuente_markov(mensaje):
-    # Generamos el alfabeto sin repetir símbolos
+    # Generamos el alfabeto sin repetir simbolos
     alfabeto = []
     for simbolo in mensaje:
         if simbolo not in alfabeto:
@@ -142,7 +138,7 @@ def obtener_fuente_markov(mensaje):
     return alfabeto, matriz
 
 # Compruebo si es memoria nula o no
-def tiene_memoria(matriz, tolerancia):
+def tiene_memoria(matriz, tolerancia = 0.000000001):
     n = len(matriz)
     # Comparamos todas las columnas contra la primera
     for columna in range(1, n):
@@ -151,10 +147,10 @@ def tiene_memoria(matriz, tolerancia):
                 matriz[fila][columna]
                 - matriz[fila][0]
             )
-            # Si alguna diferencia supera la tolerancia, el estado anterior sí afecta las probabilidades
+            # Si alguna diferencia supera la tolerancia, el estado anterior afecta las probabilidades
             if diferencia > tolerancia:
                 return True
-    # Si todas las columnas son prácticamente iguales, es una fuente de memoria nula
+    # Si todas las columnas son practicamente iguales, es una fuente de memoria nula
     return False
 
 
@@ -202,11 +198,13 @@ def calcular_longitud_media(codigo, probabilidades):
     return suma
 
 def verificar_compacta(codigo, probabilidades):
-    alfabeto = obtener_alfabeto_codigo(codigo)
+    if not verifica_univoco(codigo):
+        return False
+    r = len(obtener_alfabeto_codigo(codigo))
     longitudes = obtener_longitudes(codigo)
-    r = len(alfabeto)
-    for i in range(len(longitudes)):
-        if probabilidades[i] != r ** (-longitudes[i]):
+    for i in range(len(codigo)):
+        limite = math.ceil(math.log(1 / probabilidades[i], r))
+        if longitudes[i] > limite:
             return False
     return True
 
@@ -235,67 +233,92 @@ def extension_fuente(alfabeto, probabilidades, N):
 mensaje = ".;.:.:.::;:,::.;:,::,;,:;.:.;.;;:,.::.:,.:.;:::::."
 
 alfabeto, probabilidades = obtener_fuente(mensaje)
-print("Alfabeto:")
+print("\nAlfabeto:")
 print(alfabeto)
-print("Probabilidades:")
+print("\nProbabilidades:")
 print(probabilidades)
 
 alfabeto, matriz = obtener_fuente_markov(mensaje)
 
-print("Alfabeto:")
+print("\nAlfabeto:")
 print(alfabeto)
 print("Matriz:")
-print(matriz)
+# Muestra la matriz con formato
+for fila in matriz:
+    print("  ".join(f"{valor:.3f}" for valor in fila))
 
 tieneMemoria = tiene_memoria(matriz,0.000000001)
-print("Tiene memoria:")
+print("\nTiene memoria:")
 print(tieneMemoria)
 
-print("Entropia:")
 if (tieneMemoria):
-    print(entropia_markov(matriz)) # si tiene memoria
+    print("\nAlfabeto:")
+    print(alfabeto)
+    print("Vector estacionario:")
+    print(vector_estacionario(matriz, probabilidades))
+
+    print("\nEntropia:")
+    print(entropia_markov(matriz,vector_estacionario(matriz, probabilidades))) # si tiene memoria
 else :
+    print("\nEntropia:")
     print(entropia(probabilidades)) # si no tiene memoria
 
 extension, probabilidades_extension = extension_fuente(alfabeto, probabilidades, 2)
 
-print("Extension:")
+print("\nExtension:")
 print(extension)
-print("Probabilidades extension:")
+print("\nProbabilidades extension:")
 print(probabilidades_extension)
 
-print("Entropia extension:")
+print("\nEntropia extension:")
 print(entropia(probabilidades_extension))
 
-print("Alfabeto:")
-print(alfabeto)
-print("Vector estacionario:")
-print(vector_estacionario(matriz))
+
+# Se obtuvo el alfabeto identificando los simbolos distintos del mensaje. 
+# La probabilidad de cada simbolos se calculo dividiendo su cantidad de apariciones por la longitud total del mensaje.
+# Luego se contaron las parejas de simbolos consecutivos para construir la matriz de transicion. 
+# Cada columna representa el simbolos actual y cada fila el siguiente. Se dividio cada cantidad por el total de transiciones 
+# que salen del simbolos correspondiente.
+# Al comparar las columnas se encontraron diferencias, por lo que se la considero una fuente con memoria.
+
+# Para el calculo del vector estacionario:
+# Se tomo como vector inicial la distribucion de probabilidades obtenida del mensaje, calculada dividiendo las apariciones de 
+# cada simbolo por la cantidad total de simbolos.
+# Luego se multiplico sucesivamente la matriz de transicion por el vector:
+# Despues de cada multiplicacion, se calculo la mayor diferencia absoluta entre las componentes del vector nuevo y del anterior. 
+# Cuando esa diferencia fue menor que \(10^{-6}\), se tomo el resultado como una aproximacion del vector estacionario, 
+# ya que cumple aproximadamente: M V^* = V^*
+# Esto significa que las probabilidades de los estados practicamente no cambian al aplicar una nueva transicion.
 
 
 # Segunda parte (codificacion)
 
-alfabeto_codigo = ["/+", "*", "+-", "-", "*/"]
+alfabeto_codigo = ["(]", "]", "[)", ")", "(["]
 probabilidades = [0.15, 0.25, 0.05, 0.45, 0.1]
 r = len(obtener_alfabeto_codigo(alfabeto_codigo))
 
-print("Entropia:")
+print("\nEntropia:")
 print(entropia(probabilidades,r))
 
-print("Longitud media:")
+print("\nLongitud media:")
 print(calcular_longitud_media(alfabeto_codigo,probabilidades))
 
-print("Suma de Kraft:")
+print("\numa de Kraft:")
 print(calcula_kraft(alfabeto_codigo))
 
-print("Es no singular:")
+print("\nEs no singular:")
 print(verifica_no_singular(alfabeto_codigo))
 
-print("Es instantaneo:")
+print("\nEs instantaneo:")
 print(verifica_instantaneo(alfabeto_codigo))
 
-print("Es univoco:")
+print("\nEs univoco:")
 print(verifica_univoco(alfabeto_codigo))
 
-print("Es compacto:")
+print("\nEs compacto:")
 print(verificar_compacta(alfabeto_codigo,probabilidades))
+
+# Se identificaron cuatro simbolos en el alfabeto del codigo, por lo que se utilizo (r=4). 
+# Las longitudes de las palabras son (2,1,2,1,2). Su promedio ponderado por las probabilidades da 1,3.
+# El codigo es no singular porque sus palabras son distintas, e instantaneo porque ninguna es prefijo de otra. 
+# Por ser instantaneo, tambien es univoco.
