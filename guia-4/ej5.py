@@ -93,22 +93,72 @@ def huffman(alfabeto, probabilidades):
 
     return codigos
 
-w = 0.8
+def shannon_fano(alfabeto, probabilidades):
+    codigos = [""] * len(alfabeto)
+
+    # Ordenamos los indices de mayor a menor probabilidad
+    indices = list(range(len(alfabeto)))
+    indices.sort(key=lambda i: probabilidades[i], reverse=True)
+
+    # Grupos que todavía tenemos que dividir
+    grupos = [indices]
+    while len(grupos) > 0:
+        grupo = grupos.pop(0)
+        # Si queda un solo simbolo, no se puede dividir mas
+        if len(grupo) <= 1:
+            continue
+        # Calculamos la probabilidad total del grupo
+        total = 0
+        for i in grupo:
+            total += probabilidades[i]
+        # Buscamos el mejor punto de corte
+        acumulado = 0
+        mejor_corte = 1
+        menor_diferencia = float("inf")
+        for k in range(1, len(grupo)):
+            acumulado += probabilidades[grupo[k - 1]]
+            suma_izquierda = acumulado
+            suma_derecha = total - acumulado
+            diferencia = abs(suma_izquierda - suma_derecha)
+            if diferencia < menor_diferencia:
+                menor_diferencia = diferencia
+                mejor_corte = k
+        # Dividimos el grupo
+        izquierda = grupo[:mejor_corte]
+        derecha = grupo[mejor_corte:]
+        # Asignamos los bits
+        for i in izquierda:
+            codigos[i] += "0"
+        for i in derecha:
+            codigos[i] += "1"
+        # Estos grupos después deben volver a dividirse
+        grupos.append(izquierda)
+        grupos.append(derecha)
+    return codigos
+
+w = 0.7
 probabilidades = [w , 1 - w]
 alfabeto = ["0" , "1"]
 
-extension, probabilidades_extension = extension_fuente(alfabeto, probabilidades, 3)
+codigo1 = huffman(alfabeto, probabilidades)
+print("\nCodificacion con huffman:")
+print(codigo1)
 
-print("Extension:")
+print("\nVerifica el primer teorema de Shannon:")
+print(verifica_Shannon(probabilidades,codigo1))
+
+extension, probabilidades_extension = extension_fuente(alfabeto, probabilidades, 2)
+
+print("\nExtension:")
 print(extension)
 
 print("\nProbabilidades extension")
 print(probabilidades_extension)
 
-codigo = huffman(extension, probabilidades_extension)
+codigo2 = shannon_fano(extension, probabilidades_extension)
 
 print("\nCodificacion:")
-print(codigo)
+print(codigo2)
 
 print("\nVerifica el primer teorema de Shannon:")
-print(verifica_Shannon(probabilidades_extension,codigo))
+print(verifica_Shannon(probabilidades_extension,codigo2))

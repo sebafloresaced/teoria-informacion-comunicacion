@@ -45,14 +45,6 @@ def calcular_longitud_media(codigo, probabilidades):
         suma += probabilidades[i] * longitudes[i]
     return suma
 
-def obtener_alfabeto_codigo(codigo):
-    alfabeto = []
-    for palabra in codigo:
-        for caracter in palabra:
-            if caracter not in alfabeto:
-                alfabeto.append(caracter)
-    return alfabeto
-
 def verifica_Shannon(probabilidades, codigo):
     alfabeto_codigo = obtener_alfabeto_codigo(codigo)
     r = len(alfabeto_codigo)
