@@ -1,5 +1,5 @@
-def informacion(P) -> a partir de una lista de probabilidades devuele la informacion
-def entropia(P) -> a partir de una lista de probabilidades devuele la entropia
+def informacion(P, r=2) -> a partir de una lista de probabilidades devuele la informacion
+def entropia(P, r=2) -> a partir de una lista de probabilidades devuele la entropia
 def obtener_fuente(mensaje) -> a partir de un mensaje devuelve el alfabeto fuente y las probabilidades
 def generar_mensaje(N, alfabeto, probabilidades) -> crea un mensaje de longitud N, con el alfabeto y las probabilidades indicadas
 def obtener_alfabeto_codigo(codigo) -> a partir de un mensaje codificado, devuelve el alfabeto codigo en forma de lista
