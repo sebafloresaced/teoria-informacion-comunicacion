@@ -11,6 +11,33 @@ def mostrar_matriz(matriz):
     for fila in matriz:
         print("  ".join(f"{valor:.3f}" for valor in fila))
 
+def informacion(P, r=2):
+    I = [math.log(1 / p, r) if p > 0 else 0 for p in P]
+    return I
+
+def calcular_entropia(P, r=2):
+    I = informacion(P,r)
+    H = 0
+    for i in range(len(P)):
+        H += P[i] * I[i]
+    return H
+
+def rendimiento(probabilidades, codificacion, r = 2):
+    return calcular_entropia(probabilidades, r) / calcular_longitud_media(codificacion, probabilidades)
+
+def redundancia(probabilidades, codificacion, r = 2):
+    return 1 - rendimiento(probabilidades, codificacion, r)
+
+def obtener_longitudes(codigo):
+    return [len(palabra) for palabra in codigo]
+
+def calcular_longitud_media(codigo, probabilidades):
+    suma = 0
+    longitudes = obtener_longitudes(codigo)
+    for i in range(len(longitudes)):
+        suma += probabilidades[i] * longitudes[i]
+    return suma
+
 def obtener_probabilidades_a_priori(entrada):
     alfabeto = []
     for simbolo in entrada:
@@ -277,3 +304,75 @@ def obtener_probabilidad_error(probabilidades_a_priori, matriz_canal):
                 mayor_probabilidad_conjunta = probabilidad_conjunta
         probabilidad_acierto += mayor_probabilidad_conjunta
     return 1 - probabilidad_acierto
+
+def obtener_extension(alfabeto, probabilidades, orden):
+    extension = [[]]
+    probabilidades_extension = [1]
+    for _ in range(orden):
+        nueva_extension = []
+        nuevas_probabilidades = []
+        for i in range(len(extension)):
+            for j in range(len(alfabeto)):
+                nueva_extension.append(extension[i] + [alfabeto[j]])
+                nuevas_probabilidades.append(probabilidades_extension[i] * probabilidades[j])
+        extension = nueva_extension
+        probabilidades_extension = nuevas_probabilidades
+    return extension, probabilidades_extension
+
+def obtener_codigo_huffman(probabilidades):
+    codigos = ["" for _ in probabilidades]
+
+    # Cada grupo contiene: [probabilidad total, lista de índices de sus símbolos]
+    grupos = [[probabilidades[i], [i]] for i in range(len(probabilidades))]
+
+    while len(grupos) > 1:
+        # Buscamos y quitamos el grupo menos probable.
+        menor = 0
+        for i in range(1, len(grupos)):
+            if grupos[i][0] < grupos[menor][0]:
+                menor = i
+        grupo_1 = grupos.pop(menor)
+
+        # Buscamos y quitamos el segundo menos probable.
+        menor = 0
+        for i in range(1, len(grupos)):
+            if grupos[i][0] < grupos[menor][0]:
+                menor = i
+        grupo_2 = grupos.pop(menor)
+
+        # Agregamos un bit por delante de cada código.
+        for indice in grupo_1[1]:
+            codigos[indice] = "0" + codigos[indice]
+        for indice in grupo_2[1]:
+            codigos[indice] = "1" + codigos[indice]
+
+        # Unimos ambos grupos.
+        nuevo_grupo = [grupo_1[0] + grupo_2[0], grupo_1[1] + grupo_2[1]]
+        grupos.append(nuevo_grupo)
+    return codigos
+
+# TC = tamanio original / tamanio comprimido
+def tasa_compresion(mensaje, codificado):
+    return len(mensaje) / len(codificado)
+
+def obtener_alfabeto_codigo(codigo):
+    alfabeto = []
+    for palabra in codigo:
+        for caracter in palabra:
+            if caracter not in alfabeto:
+                alfabeto.append(caracter)
+    return alfabeto
+
+# probabilidades de la fuente original, palabras del codigo/extension y orden de la extension
+def extension_verifica_Shannon(probabilidades, palabras_codigo, N = 1):
+    r = len(obtener_alfabeto_codigo(palabras_codigo))
+    entropia = calcular_entropia(probabilidades, r)
+
+    # Genero un alfabeto numerico con la cantidad de probabilidades que tengo (simula el alfabeto original de orden 1)
+    alfabeto_aux = [str(i) for i in range(len(probabilidades))] 
+    # Genero las probabilidades de la extensión de orden N
+    _, probabilidades_extension = obtener_extension(alfabeto_aux, probabilidades, N)
+
+    longitud_media = calcular_longitud_media(palabras_codigo, probabilidades_extension)
+
+    return (entropia <= longitud_media / N) and (longitud_media / N <= entropia + 1 / N)

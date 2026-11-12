@@ -45,7 +45,7 @@ def obtener_alfabeto_codigo(codigo):
                 alfabeto.append(caracter)
     return alfabeto
 
-def extension_verifica_Shannon(probabilidades, palabras_codigo, N):
+def extension_verifica_Shannon(probabilidades, palabras_codigo, N = 1):
     r = len(obtener_alfabeto_codigo(palabras_codigo))
     entropia = calcular_entropia(probabilidades, r)
 
